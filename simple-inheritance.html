@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script>
+    /*
+    * original: https://gist.github.com/shakyShane/5944153     John Resig's Posting
+    */
+
+    (function (global) {
+        "use strict";
+        //兼容 Object.create
+        if (!Object.create) {
+            Object.create = (function () {
+                function F() {
+                }
+
+                return function (o) {
+                    if (arguments.length != 1) {
+                        throw new Error("Object.create implementation only accepts one parameter.");
+                    }
+                    F.prototype = o;
+                    return new F();
+                };
+            })();
+        }
+
+        // /xyz/.test(function(){xyz;})是用于判定函数的toString是否暴露里面的实现
+        // 因为Function。prototype.toString没有做出强制规定如何显示自身，根据自身浏览器实现而定
+        // 如果里面能显示内部内容，使用/\b_super\b/来检测函数里面有没有.super语句（不是很充分，只是够用的程度）
+        // 否则就返回 怎么也返回true 的正则
+        var fnTest = /xyz/.test(function () {
+            xyz;
+        }) ? /\b_super\b/ : /.*/;
+
+        //所有人工类的基类
+        function BaseClass() {}
+
+        // Create a new Class that inherits from this class
+        BaseClass.extend = function (props) {
+            var _super = this.prototype;
+            console.log(_super);
+            // 实例化基类（但只有创建实例，不运行init构造函数）--Instantiate a base class (but only create the instance, don't run the init constructor)
+            var proto = Object.create(_super);
+
+            // 复制属性到新原型上--Copy the properties over onto the new prototype
+            for (var name in props) {
+                // 检查是否覆写存在的方法--Check if we're overwriting an existing function
+                proto[name] = typeof props[name] === "function" &&
+                typeof _super[name] === "function" && fnTest.test(props[name]) ?
+                        (function (name, fn) {
+                            return function () {
+                                var tmp = this._super;
+
+                                // Add a new ._super() method that is the same method
+                                // but on the super-class
+                                this._super = _super[name];
+
+                                // The method only need to be bound temporarily, so we
+                                // remove it when we're done executing
+                                var ret = fn.apply(this, arguments);
+                                this._super = tmp;
+
+                                return ret;
+                            };
+                        })(name, props[name]) :
+                        props[name];
+            }
+
+            // The new constructor
+            var newClass = typeof proto.init === "function" ?
+                    proto.init : // All construction is actually done in the init method
+                    function () {};
+
+            // Populate our constructed prototype object
+            newClass.prototype = proto;
+
+            // Enforce the constructor to be what we expect
+            proto.constructor = newClass;
+
+            // And make this class extendable
+            newClass.extend = BaseClass.extend;
+
+            return newClass;
+        };
+
+        // export
+        global.Class = BaseClass;
+    })(this);
+</script>
+
+<script>
+    var Animal = Class.extend({
+        init: function(name){
+            this.name = name;
+        },
+        shout: function(s){
+            console.log(s);
+        }
+    });
+
+    var animal = new Animal();
+
+    animal.shout('animal');
+
+    var Dog = Animal.extend({
+        init: function(name,age){
+            //调用父类构造器
+            console.log(this);
+
+            this._super.apply(this,arguments);
+            this.age = age;
+        },
+        run: function(s){
+            console.log(s);
+        }
+    });
+
+    var dog = new Dog('dog',4);
+
+    console.log('Dog prototype:',Dog.prototype)
+
+    console.log(dog.name);
+    dog.shout('xxx');
+    dog.run('run');
+    console.log(dog instanceof Dog && dog instanceof Animal);
+</script>
+</body>
+</html>

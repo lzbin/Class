@@ -6,7 +6,6 @@
 </head>
 <body>
 <script>
-  var count = 0;
 
   var JS = {
     VERSION: '2.2.1'
@@ -75,8 +74,8 @@
   var animal = new Animal();
 
   animal.shout('animal');
-console.log(animal);
-   var Dog = Animal.extend({
+
+  var Dog = Animal.extend({
     construct: function(name,age){
       //调用父类构造器
       this.parent.construct.apply(this,arguments);
@@ -91,7 +90,7 @@ console.log(animal);
   dog.shout('dog');
   dog.run('run');
 
-  var Shepherd = Dog.extend({
+  /*var Shepherd = Dog.extend({
     statics: {
       TYPE: "Shepherd"
     },
@@ -103,7 +102,7 @@ console.log(animal);
 
   console.log(Shepherd.TYPE);
   var shepherd = new Shepherd('shepherd',5);
-  shepherd.run();
+  shepherd.run();*/
 
 </script>
 </body>
