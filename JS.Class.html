@@ -90,7 +90,7 @@
   dog.shout('dog');
   dog.run('run');
 
-  /*var Shepherd = Dog.extend({
+  var Shepherd = Dog.extend({
     statics: {
       TYPE: "Shepherd"
     },
@@ -100,9 +100,12 @@
     }
   });
 
+  var Shep = Shepherd.extend();
+
+
   console.log(Shepherd.TYPE);
   var shepherd = new Shepherd('shepherd',5);
-  shepherd.run();*/
+  shepherd.run();
 
 </script>
 </body>
