@@ -258,8 +258,7 @@
             this.thirsty = false;
         }
     });
-    var Dog = JSClass({
-    }).mixin(Pet, Animal);
+    var Dog = JSClass({}).mixin(Pet, Animal);
     var pluto = new Dog();
     pluto.drink();
     pluto.name('pluto');

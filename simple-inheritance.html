@@ -41,8 +41,8 @@
 
         // Create a new Class that inherits from this class
         BaseClass.extend = function (props) {
-            var _super = this.prototype;
-            console.log(_super);
+            var _super = this.prototype;        //将当前对象的原型转移至 _super 变量
+
             // 实例化基类（但只有创建实例，不运行init构造函数）--Instantiate a base class (but only create the instance, don't run the init constructor)
             var proto = Object.create(_super);
 
@@ -52,6 +52,7 @@
                 proto[name] = typeof props[name] === "function" &&
                 typeof _super[name] === "function" && fnTest.test(props[name]) ?
                         (function (name, fn) {
+                            //若当前待重写的属性prop[name]是一个函数，且父类中也有这个函数，则返回一个经过闭包加工过的函数赋值给prototype
                             return function () {
                                 var tmp = this._super;
 
@@ -67,12 +68,12 @@
                                 return ret;
                             };
                         })(name, props[name]) :
-                        props[name];
+                        props[name];//赋值该属性直接赋值给prototype
             }
 
             // The new constructor
             var newClass = typeof proto.init === "function" ?
-                    proto.init : // All construction is actually done in the init method
+                    proto.init : // 所有的构造实际上是在init方法完成 --All construction is actually done in the init method
                     function () {};
 
             // Populate our constructed prototype object
@@ -121,7 +122,7 @@
 
     var dog = new Dog('dog',4);
 
-    console.log('Dog:',Dog.prototype)
+    console.log('Dog:',Dog.prototype);
 
     console.log(dog.name);
     dog.shout('xxx');

@@ -42,11 +42,15 @@
     // })
     //
     Class.create = function(parent, properties) {
+        //parent 不是构造函数时，赋值给 properties
         if (!isFunction(parent)) {
             properties = parent;
             parent = null;
         }
-
+        /**
+         * !properties时赋值为空对象
+         *
+         * */
         properties || (properties = {});
         parent || (parent = properties.Extends || Class);
         properties.Extends = parent;
@@ -67,14 +71,14 @@
             mix(SubClass, parent, parent.StaticsWhiteList);
         }
 
-        // Add instance properties to the subclass.
+        // 向子类添加实例属性--Add instance properties to the subclass.
         implement.call(SubClass, properties);
 
         // Make subclass extendable.
         return classify(SubClass);
     };
 
-
+    // 执行 mutators
     function implement(properties) {
         var key, value;
 
@@ -109,7 +113,7 @@
     // Mutators define special properties.
     Class.Mutators = {
 
-        'Extends': function(parent) {
+        /*'Extends'*/'members': function(parent) {
             var existed = this.prototype;
             var proto = createProto(parent.prototype);
 
@@ -124,7 +128,7 @@
 
             // Set a convenience property in case the parent's prototype is
             // needed later.
-            this.superclass = parent.prototype
+            this.superclass = parent.prototype;
         },
 
         'Implements': function(items) {
@@ -142,7 +146,7 @@
     };
 
 
-    // Shared empty constructor function to aid in prototype-chain creation.
+    // 共享空构造函数帮助原型链的创建。 --Shared empty constructor function to aid in prototype-chain creation.
     function Ctor() {
     }
 
@@ -204,21 +208,32 @@
         initialize: function(name) {
             this.name = name;
         },
-
-        talk: function() {
-            alert('我是' + this.name);
+        members: {
+            talk: function() {
+                document.write('我是' + this.name);
+            }
         }
+
     });
 
-
-    var smallPig = Pig.extend({
-        talk: function(){
-            alert('我是小'+this.name);
+    var SmallPig = Pig.extend({
+        initialize: function(name) {
+            this.name = name;
+        },
+        Statics:{NAME: 'SmallPig'},
+        members: {
+            talk: function(){
+                document.write('我是小'+this.name);
+            }
         }
+
     });
 
-    console.log(Pig.prototype);
+    var pig = new Pig('zhu');
 
+    var smallPig = new SmallPig('sss');
+
+    console.log(smallPig);
 
 </script>
 </body>
